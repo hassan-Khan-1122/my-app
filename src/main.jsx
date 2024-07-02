@@ -7,7 +7,6 @@ import { DictionaryProvider } from './Component/Context/DishnoryApp.jsx'
 ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>
     <DictionaryProvider>
-      {/* <Main/> */}
     <App />
 
     </DictionaryProvider>
