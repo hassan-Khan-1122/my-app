@@ -1,4 +1,6 @@
 
+
+
 import React, { useState } from "react";
 import axios from "axios";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -11,9 +13,9 @@ function Section() {
   const [word, setWord] = useState("");
   const [audioPlaying, setAudioPlaying] = useState(null);
   const [inputError, setInputError] = useState(false);
-  const [notfound, setNotFound] = useState(false); // State to manage not found condition
- const [searchError, setSearchError] = useState(""); // State to manage search error condition
-  const { isDark, fontStyle } = useDictionary();
+  const [notfound, setNotFound] = useState(false);
+  const [searchError, setSearchError] = useState("");
+  const { isDark, fontStyle, fontClasses } = useDictionary();
 
   const containerClass = isDark
     ? "bg-gray-800 text-white"
@@ -26,18 +28,17 @@ function Section() {
       const res = await axios.get(
         `https://api.dictionaryapi.dev/api/v2/entries/en/${word}`
       );
-      console.log("response", res);
       if (res.data.length === 0) {
         setNotFound(true);
       } else {
         setApiShow(res.data);
       }
     } catch (error) {
-        const searchError = await error.response.data.message;
-        if(error){
-            setNotFound(true);
-            setSearchError(searchError);
-        }
+      const searchError = await error.response.data.message;
+      if (error) {
+        setNotFound(true);
+        setSearchError(searchError);
+      }
       console.error("Error fetching data:", error);
     }
   };
@@ -52,7 +53,7 @@ function Section() {
 
   const handleSearch = (e) => {
     e.preventDefault();
-    setNotFound(false); 
+    setNotFound(false);
     if (word.trim() === "") {
       setInputError(true);
       return;
@@ -73,7 +74,7 @@ function Section() {
   };
 
   return (
-    <div className={`min-h-[100vh] ${containerClass}`}>
+    <div className={`min-h-[100vh] ${containerClass} ${fontClasses[fontStyle]}`}>
       <div className={`flex justify-center ${containerClass}`}>
         <div className="w-full max-w-2xl mt-20 px-4">
           <label
@@ -87,21 +88,16 @@ function Section() {
               placeholder="Enter your keyword here"
               className={`flex-1 px-4 py-2 rounded-md outline-none ${
                 isDark ? "bg-black" : "bg-white"
-              } ${
-                fontStyle === "mono"
-                  ? "font-mono"
-                  : fontStyle === "sans"
-                  ? "font-sans"
-                  : "font-serif"
-              }`}
+              } ${fontClasses[fontStyle]}`}
               value={word}
               onChange={handleInputChange}
             />
             <CiSearch
-              className="text-3xl cursor-pointer text-[#e72ae7]"
+              className="text-3xl cursor-pointer text-[#e72ae7] "
               onClick={handleSearch}
             />
           </label>
+
           {inputError && (
             <p className="text-red-500 mt-2">
               Please enter a keyword to search.
@@ -110,18 +106,10 @@ function Section() {
         </div>
       </div>
 
-      <div
-        className={`pt-10 flex justify-center ${containerClass} ${
-          fontStyle === "mono"
-            ? "font-mono"
-            : fontStyle === "sans"
-            ? "font-sans"
-            : "font-serif"
-        }`}
-      >
-        {notfound? (
-          <p className="text-center mt-14 text-2xl font-bold">
-           {searchError}
+      <div className={`pt-10 flex justify-center ${containerClass} ${fontClasses[fontStyle]}`}>
+        {notfound ? (
+          <p className="text-red-500 mt-14 text-2xl font-bold">
+            {searchError}
           </p>
         ) : apishow.length > 0 ? (
           <div className="flex flex-col gap-4">
@@ -130,9 +118,9 @@ function Section() {
                 key={index}
                 className={`p-4 rounded shadow-lg ${
                   isDark
-                    ? "bg-gray-200 text-gray-800"
-                    : "bg-white text-gray-800"
-                }`}
+                    ? " text-white"
+                    : " text-gray-800"
+                } ${fontClasses[fontStyle]}`}
               >
                 <div className="flex justify-between items-center mb-2">
                   <h2 className="text-5xl md:text-5xl font-bold">

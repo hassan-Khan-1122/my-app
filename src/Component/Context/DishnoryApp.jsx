@@ -1,78 +1,48 @@
 
 
+import React, { createContext, useContext, useState, useEffect } from 'react';
 
-
-
-// import React, { createContext, useState, useContext } from 'react';
-
-// // Create the context
-// const DictionaryContext = createContext();
-
-// // Create a provider component
-// export const DictionaryProvider = ({ children }) => {
-//     const [isDark, setIsDark] = useState(false);
-//     const [fontStyle, setFontStyle] = useState('sans'); // Default font style
-
-
-//     const toggleDarkMode = () => {
-//         setIsDark((prevIsDark) => !prevIsDark);
-//     };
-
-//          const changeFontStyle = (style) => {
-//              setFontStyle(style);
-//             };
-
-//     return (
-//         <DictionaryContext.Provider value={{ isDark, toggleDarkMode , fontStyle, changeFontStyle }}>
-//             {children}
-//         </DictionaryContext.Provider>
-//     );
-// };
-
-// // Custom hook to use the DictionaryContext
-// export const useDictionary = () => {
-//     return useContext(DictionaryContext);
-// };
-import React, { createContext, useState, useContext, useEffect } from 'react';
-
-// Create the context
 const DictionaryContext = createContext();
 
-// Create a provider component
+const fontClasses = {
+  sans: 'font-sans',
+  mono: 'font-mono',
+  serif: 'font-serif',
+  'sans-medium': 'font-sans font-medium',
+  'sans-semi-bold': 'font-sans font-semibold',
+  'sans-bold': 'font-sans font-bold',
+  'sans-extra-bold': 'font-sans font-extrabold',
+  'sans-black': 'font-sans font-black',
+};
+
 export const DictionaryProvider = ({ children }) => {
-    // Initialize state for dark mode
-    const [isDark, setIsDark] = useState(() => {
-        // Retrieve dark mode preference from local storage (default to false)
-        const storedDarkMode = localStorage.getItem('darkMode');
-        return storedDarkMode ? JSON.parse(storedDarkMode) : false;
-    });
+  const [isDark, setIsDark] = useState(() => {
+    // Retrieve isDark from localStorage if available, otherwise default to false
+    return JSON.parse(localStorage.getItem('isDark')) || false;
+  });
+  const [fontStyle, setFontStyle] = useState(() => {
+    // Retrieve fontStyle from localStorage if available, otherwise default to 'sans'
+    return localStorage.getItem('fontStyle') || 'sans';
+  });
 
-    // Initialize state for font style
-    const [fontStyle, setFontStyle] = useState('sans'); // Default font style
+  // Update localStorage whenever isDark or fontStyle changes
+  useEffect(() => {
+    localStorage.setItem('isDark', JSON.stringify(isDark));
+  }, [isDark]);
 
-    // Function to toggle dark mode
-    const toggleDarkMode = () => {
-        setIsDark((prevIsDark) => {
-            const newIsDark = !prevIsDark;
-            // Store the updated dark mode preference in local storage
-            localStorage.setItem('darkMode', JSON.stringify(newIsDark));
-            return newIsDark;
-        });
-    };
+  useEffect(() => {
+    localStorage.setItem('fontStyle', fontStyle);
+  }, [fontStyle]);
 
-    // Function to change font style
-    const changeFontStyle = (style) => {
-        setFontStyle(style);
-    };
+  const toggleDarkMode = () => setIsDark(prevIsDark => !prevIsDark);
+  const changeFontStyle = (style) => setFontStyle(style);
 
-    return (
-        <DictionaryContext.Provider value={{ isDark, toggleDarkMode, fontStyle, changeFontStyle }}>
-            {children}
-        </DictionaryContext.Provider>
-    );
+  return (
+    <DictionaryContext.Provider value={{ isDark, toggleDarkMode, fontStyle, changeFontStyle, fontClasses }}>
+      {children}
+    </DictionaryContext.Provider>
+  );
 };
 
-// Custom hook to use the DictionaryContext
-export const useDictionary = () => {
-    return useContext(DictionaryContext);
-};
+export const useDictionary = () => useContext(DictionaryContext);
+
